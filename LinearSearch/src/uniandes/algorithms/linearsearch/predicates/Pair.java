@@ -1,6 +1,5 @@
 package uniandes.algorithms.linearsearch.predicates;
 
-import java.util.function.Predicate;
 
 public class Pair implements uniandes.algorithms.linearsearch.Predicate{
 
