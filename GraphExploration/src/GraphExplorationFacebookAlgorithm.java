@@ -39,7 +39,8 @@ public class GraphExplorationFacebookAlgorithm {
 				opt = sol;
 			}
 		}
-		System.out.println(opt.getTotalPeople());
+		System.out.println("LAS PERSONAS SON "+Arrays.toString(opt.getPeople()));
+		System.out.println("LA CANTIDAD MÁXIMA ES "+opt.getTotalPeople());
 		return opt.getPeople();
 	}
 
@@ -220,6 +221,9 @@ public class GraphExplorationFacebookAlgorithm {
 	public static void main(String[] args) throws Exception {
 		GraphExplorationFacebookAlgorithm g = new GraphExplorationFacebookAlgorithm();
 		g.test(1);
+		g.test(2);
+		g.test(3);
+		g.generateRandomData(15);
 	}
 }
 /**
