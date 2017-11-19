@@ -1,5 +1,8 @@
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,14 +23,14 @@ public class GraphExplorationFacebookAlgorithm {
 	private HashMap<String,Boolean> hash;
 	
 	public boolean[] calculateOptimalSubset(boolean[][] adj) {
+		//Start the marked list of states
+		hash = new HashMap<String,Boolean>();
 		//Input data is saved as class attributes to avoid passing the parameters through the different methods
 		this.adj = adj;
 		//Call of the graph exploration algorithm to find feasible solutions
 		List<FacebookState> solutions = findFeasibleSolutions();
 		//Choose the best of the selected solutions
 		FacebookState opt = null;
-		//Start the marked list of states
-		hash = new HashMap<String,Boolean>();
 		int maxPeople = 0;
 		for(FacebookState sol:solutions) {
 			int people = sol.getTotalPeople();
@@ -36,6 +39,7 @@ public class GraphExplorationFacebookAlgorithm {
 				opt = sol;
 			}
 		}
+		System.out.println(opt.getTotalPeople());
 		return opt.getPeople();
 	}
 
@@ -101,11 +105,17 @@ public class GraphExplorationFacebookAlgorithm {
 	private boolean domino (FacebookState state)
 	{
 		boolean[] people=state.people;
+		boolean end=true;
+		for(int i=0;i<people.length && end;i++)
+		{
+			if(people[i]) end=false;
+		}
+		if(end) return false;
 		for(int i=0;i<adj.length;i++)
 		{
 			if(people[i])
 			{
-				for(int j=i;j<adj[0].length;j++)
+				for(int j=i+1;j<adj[0].length;j++)
 				{
 					if(people[j])
 					{
@@ -158,6 +168,58 @@ public class GraphExplorationFacebookAlgorithm {
 			}
 		}
 		return isSolution;
+	}
+	/**
+	 * Generates test with number file in data file.<br>
+	 * @param number Number for test
+	 */
+	public void test(int number) throws Exception
+	{
+		BufferedReader br = new BufferedReader(new FileReader(new File("./data/test"+number+".csv")));
+		String line=br.readLine();
+		boolean[][] adj= new boolean[line.length()][line.length()];
+		String[] datos=null;
+		int i=0;
+		int j=0;
+		while(line!=null)
+		{
+			j=0;
+			datos=line.split(",");
+			for(String s:datos)
+			{
+				adj[i][j]=s.equals("1")?true:false;
+				adj[j][i]=adj[i][j];
+				j++;
+			}
+			i++;
+			line=br.readLine();
+		}
+		br.close();
+		calculateOptimalSubset(adj);
+	}
+	/**
+	 * Generates random matrix for file with the given length.<br>
+	 * @param length Length of the matrix
+	 */
+	public void generateRandomData(int length)
+	{
+		boolean[][] adj= new boolean[length][length];
+		int prob=0;
+		for(int i=0;i<length;i++)
+		{
+			for(int j=i+1;j<length;j++)
+			{
+				prob=(int)(Math.random()*1000);
+				adj[i][j]=prob%10>0?true:false;
+				adj[j][i]=adj[i][j];
+			}
+		}
+		calculateOptimalSubset(adj);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		GraphExplorationFacebookAlgorithm g = new GraphExplorationFacebookAlgorithm();
+		g.test(1);
 	}
 }
 /**
