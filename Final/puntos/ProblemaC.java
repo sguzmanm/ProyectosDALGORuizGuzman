@@ -8,8 +8,8 @@ import java.util.PriorityQueue;
  *
  */
 public class ProblemaC {
-	
-	private PriorityQueue<CharacterChainState> queue= new PriorityQueue<>();
+	//Java´s default PriorityQueue. It acts as a MinHeap with O(log n) operations for inserting and removing elements
+	private PriorityQueue<CharacterChainState> agenda= new PriorityQueue<>();
 }
 
 class CharacterChainState implements Comparable<CharacterChainState>{
@@ -36,14 +36,20 @@ class CharacterChainState implements Comparable<CharacterChainState>{
 	 */
 	@Override
 	public int compareTo(CharacterChainState o) {
+		
 		if(n<o.n) return-1;
 		else if (n>o.n) return 1;
 		else
 		{
+			//This is the worst case for the conditional because it involves to operations.
+			//Nevertheless is assumed to be constant O(1)
 			return t.length()-o.t.length();
 		}
 	}
-	
+	/**
+	 * To string if it is required for further testing.<br>
+	 * @return [Text length]:[Quantity of substrings];[Level]
+	 */
 	public String toString()
 	{
 		return t.length()+";"+sb.length+";"+n;
