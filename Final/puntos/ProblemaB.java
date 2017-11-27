@@ -55,15 +55,17 @@ class Graph
 		//Regular queue with O(1) operations
 		Queue<Integer> agenda=new LinkedList<>();
 		int source=Integer.parseInt(data[2]);
+		int[] parents=new int[v];
 		bipartition[0]=1;
 		marked[source]=true;
 		agenda.add(source);
 		int color=0;
+		parents[source]=0;
 		//Cycle. Worst case O(v+e)
 		while(!agenda.isEmpty())
 		{
 			source=agenda.poll();
-			color=(color+1)%2;
+			color=(parents[source]+1)%2;
 			for(int i=0;i<v;i++)
 			{
 				if(adj[source][i] && !marked[i])
@@ -71,6 +73,7 @@ class Graph
 					bipartition[color]++;
 					marked[i]=true;
 					agenda.add(i);
+					parents[i]=color;
 				}
 			}
 		}
