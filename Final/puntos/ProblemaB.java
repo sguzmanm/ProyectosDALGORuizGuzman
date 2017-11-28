@@ -25,7 +25,7 @@ public class ProblemaB {
 }
 
 /**
- * Clase del grafo
+ * Graph class
  */
 class Graph
 {
@@ -37,35 +37,48 @@ class Graph
 	 */
 	public Graph(String line)
 	{
+		//Q: The graph is bipartite
+
 		//Data split O(n)
 		String[] data=line.split(" ");
 		//Number of vertexes
 		int v=Integer.parseInt(data[0]);
 		//Adjacency matrix
 		boolean[][] adj= new boolean[v][v];
-		//P:2<=i<data.length ^ for each pair until i there is an edge in adj O(v)
+		//P1:2<=i<data.length ^ for each pair until i there is an edge in adj O(v)
+		//t1:n-i
 		for(int i=2;i<data.length;i+=2)
 		{
 			adj[Integer.parseInt(data[i])][Integer.parseInt(data[i+1])]=true;
 			adj[Integer.parseInt(data[i+1])][Integer.parseInt(data[i])]=true;
 		}
-		//Marked array
+		//R1: 
+		//Marked array for each pair until data.length there is an edge in adj
 		boolean[] marked=new boolean[v];
 		bipartition= new int[2];
 		//Regular queue with O(1) operations
 		Queue<Integer> agenda=new LinkedList<>();
 		int source=Integer.parseInt(data[2]);
-		int[] parents=new int[v];
+		//Array that stores the value of the vertixes partition, which is either 0 or 1.
+		int[] value=new int[v];
+		//Adds one element to the first number of the bipartition
 		bipartition[0]=1;
 		marked[source]=true;
 		agenda.add(source);
 		int color=0;
-		parents[source]=0;
-		//Cycle. Worst case O(v+e)
+		value[source]=0;
+		//Cycle with complexity O(V)
+		//P2:agenda!=empty
+		//t2:agenda.size()
 		while(!agenda.isEmpty())
 		{
+			//New source of bfs
 			source=agenda.poll();
-			color=(parents[source]+1)%2;
+			//Changes the value of the given vertex to the other possible bipartition for the children found in the bfs
+			color=(value[source]+1)%2;
+			//Cycle that goes through all the adjoint vertexes. O(V)
+			//P3:0<=i<v ^ for all adjoints from sourcce that are not marked, the value is changed, bipartition is changed and the vertex is marked
+			//t3:v-i
 			for(int i=0;i<v;i++)
 			{
 				if(adj[source][i] && !marked[i])
@@ -73,10 +86,12 @@ class Graph
 					bipartition[color]++;
 					marked[i]=true;
 					agenda.add(i);
-					parents[i]=color;
+					value[i]=color;
 				}
 			}
+			//R3:for all adjoints from source that are not marked, the value is changed, bipartition is changed and the vertex is marked
 		}
+		//R2: agenda==empty ^ for all pairs of adjoints ther is a mark in the graph and bipartition marks the number of each vertex and so on
 		
 	}
 	/**
