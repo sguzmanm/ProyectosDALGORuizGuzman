@@ -38,21 +38,20 @@ class Graph
 	public Graph(String line)
 	{
 		//Q: The graph is bipartite
-
 		//Data split O(n)
 		String[] data=line.split(" ");
 		//Number of vertexes
 		int v=Integer.parseInt(data[0]);
 		//Adjacency matrix
 		boolean[][] adj= new boolean[v][v];
-		//P1:2<=i<data.length ^ for each pair until i there is an edge in adj O(v)
+		//P1:2<=i<data.length ^ AdjPairs(data,i,adj)
 		//t1:n-i
 		for(int i=2;i<data.length;i+=2)
 		{
 			adj[Integer.parseInt(data[i])][Integer.parseInt(data[i+1])]=true;
 			adj[Integer.parseInt(data[i+1])][Integer.parseInt(data[i])]=true;
 		}
-		//R1: 
+		//R1: AdjPairs(data,data.length,adj)
 		//Marked array for each pair until data.length there is an edge in adj
 		boolean[] marked=new boolean[v];
 		bipartition= new int[2];
@@ -68,7 +67,7 @@ class Graph
 		int color=0;
 		value[source]=0;
 		//Cycle with complexity O(V)
-		//P2:agenda!=empty
+		//P2:!agenda.isEmpty() ^ bip(marked,value,0)=bipartition[0]^bip(marked,value,1)=bipartition[1]
 		//t2:agenda.size()
 		while(!agenda.isEmpty())
 		{
@@ -77,7 +76,7 @@ class Graph
 			//Changes the value of the given vertex to the other possible bipartition for the children found in the bfs
 			color=(value[source]+1)%2;
 			//Cycle that goes through all the adjoint vertexes. O(V)
-			//P3:0<=i<v ^ for all adjoints from sourcce that are not marked, the value is changed, bipartition is changed and the vertex is marked
+			//P3:0<=i<v ^ markedValue(adj,source,i,marked,value)
 			//t3:v-i
 			for(int i=0;i<v;i++)
 			{
@@ -89,35 +88,9 @@ class Graph
 					value[i]=color;
 				}
 			}
-			//R3:for all adjoints from source that are not marked, the value is changed, bipartition is changed and the vertex is marked
+			//R3:markedValue(adj,source,v,marked,value)
 		}
-		//R2: agenda==empty ^ for all pairs of adjoints ther is a mark in the graph and bipartition marks the number of each vertex and so on
+		//R2: agenda.isEmpty() ^ bip(marked,value,0)=bipartition[0]^bip(marked,value,1)=bipartition[1] ^ generalMarked(adj,v,marked,value)
 		
-	}
-	/**
-	 * Method that joins two bipartite graphs into one showing the two possible alternatives.<br>
-	 * @param part1 First bipartite graph.<br>
-	 * @param part2 Second bipartite graph.<br>
-	 * @return rta Integer array that stores the tow possible scenarios of joining between classes.
-	 */
-	public static int[] joinPartition1(int[] part1, int[] part2)
-	{
-		int[] rta=new int[2];
-		rta[0]=part1[0]+part2[0];
-		rta[1]=part1[1]+part2[1];
-		return rta;
-	}
-	/**
-	 * Method that joins two bipartite graphs into one showing the two possible alternatives.<br>
-	 * @param part1 First bipartite graph.<br>
-	 * @param part2 Second bipartite graph.<br>
-	 * @return rta Integer array that stores the tow possible scenarios of joining between classes.
-	 */
-	public static int[] joinPartition2(int[] part1, int[] part2)
-	{
-		int[] rta=new int[2];
-		rta[0]=part1[1]+part2[0];
-		rta[1]=part1[0]+part2[1];
-		return rta;
 	}
 }
