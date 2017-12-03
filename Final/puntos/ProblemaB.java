@@ -61,8 +61,6 @@ public class ProblemaB {
 		}
 		//Iterates over the other rows
 		boolean exists=true;
-		if(matrix.length>1)
-		{
 			for(int i=1;i<matrix.length;i++)
 			{
 				for(int j=0;j<matrix[0].length;j++)
@@ -70,26 +68,28 @@ public class ProblemaB {
 					exists=false;
 					for(int k=0;k<j-k && !exists;k++)
 					{
-						if(notZero(matrix[i-1][k]) && hash.get(j-k)!=null)
+						if(hash.get(j-k)!=null && notZero(matrix[i-1][k]))
 						{
 							for(Integer g:hash.get(j-k))
 							{
 								if(!matrix[i-1][k][g])
 								{
-									matrix[i][j]=matrix[i-1][k];
+									b=Arrays.copyOf(matrix[i-1][k], matrix[0][0].length);
+									matrix[i][j]=b;
 									matrix[i][j][g]=true;
 									exists=true;
 									break;
 								}
 							}
 						}
-						else if(notZero(matrix[i-1][j-k]) && hash.get(k)!=null)
+						else if(hash.get(k)!=null && notZero(matrix[i-1][j-k]))
 						{
 							for(Integer g:hash.get(k))
 							{
 								if(!matrix[i-1][j-k][g])
 								{
-									matrix[i][j]=matrix[i-1][j-k];
+									b=Arrays.copyOf(matrix[i-1][j-k], matrix[0][0].length);
+									matrix[i][j]=b;
 									matrix[i][j][g]=true;
 									exists=true;
 									break;
@@ -99,26 +99,28 @@ public class ProblemaB {
 					}
 					for(int k=j;k<matrix[0].length && !exists;k++)
 					{
-						if(notZero(matrix[i-1][k]) && hash.get(k-j)!=null)
+						if(hash.get(k-j)!=null && notZero(matrix[i-1][k]))
 						{
 							for(Integer g:hash.get(k-j))
 							{
 								if(!matrix[i-1][k][g])
 								{
-									matrix[i][j]=matrix[i-1][k];
-									matrix[i][j][k-j]=true;
+									b=Arrays.copyOf(matrix[i-1][k], matrix[0][0].length);
+									matrix[i][j]=b;
+									matrix[i][j][g]=true;
 									exists=true;
 									break;
 								}
 							}
 						}
-						else if(notZero(matrix[i-1][k-j]) && hash.get(k)!=null)
+						else if(hash.get(k-j)!=null && notZero(matrix[i-1][k-j]))
 						{
 							for(Integer g:hash.get(k))
 							{
-								if(!matrix[i-1][k+j][g])
+								if(!matrix[i-1][k-j][g])
 								{
-									matrix[i][j]=matrix[i-1][k-j];
+									b=Arrays.copyOf(matrix[i-1][k-j], matrix[0][0].length);
+									matrix[i][j]=b;
 									matrix[i][j][g]=true;
 									exists=true;
 									break;
@@ -127,7 +129,7 @@ public class ProblemaB {
 						}
 					}
 				}
-			}
+			
 			
 		}
 		for(int j=0;j<matrix[0].length;j++)
@@ -237,6 +239,7 @@ class Graph
 		//Array that stores the value of the vertixes partition, which is either 0 or 1.
 		int[] value=new int[v];
 		//Adds one element to the first number of the bipartition
+		System.out.println(line);
 		bipartition[0]=1;
 		marked[source]=true;
 		agenda.add(source);
@@ -268,5 +271,6 @@ class Graph
 		}
 		//R2: agenda.isEmpty() ^ bip(marked,value,0)=bipartition[0]^bip(marked,value,1)=bipartition[1] ^ generalMarked(adj,v,marked,value)
 		difference=Math.abs(bipartition[1]-bipartition[0]);
+		System.out.println("DIFFERENCE "+difference);
 	}
 }
