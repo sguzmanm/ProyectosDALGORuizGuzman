@@ -26,9 +26,7 @@ public class ProblemaB {
 		//Variables de máxima diferencia y de diferencia temporal
 		int maxDifference=0;
 		int dif=0;
-		//HashMap para las diferencias de los grafos. Por lo que se entiende, la complejidad de insertar y sacar un elemento es de O(log (n/m)) 
-		//Donde n es el número total de elementos y m la cantidad de biparticiones que se hacen dentro del hashmap. Dicho n siempre será igual al número
-		//N de grafos for lo que la complejidad de inserción se despreciará en este algoritmo al depender de m, es decir, se asume como constante.
+		//HashMap para las diferencias de los grafos. Por lo que se entiende, la complejidad de las operaciones de inserción y obtención de elementos del hash es constante.
 		HashMap<Integer,List<Integer>> hash= new HashMap<>();
 		//Ciclo para determinar la máxima diferencia O(N)
 		//P1: 0<=i<N ^ maxDifference=(max k|0<=k<i|:graphs[k].difference)
@@ -58,25 +56,53 @@ public class ProblemaB {
 		boolean[][][] matrix = new boolean[graphs.length][maxDifference+1][graphs.length];
 		//Itera únicamente sobre los elementos con diferencias registradas. En el peor de los casos se pasa nuevamente por el número total 
 		//de grafos se asume complejidad O(N).
+		
 		//P2:Asumiendo que se un conjunto se puede representar como un arreglo y que los valores i son dados en forma secuencial. Se tiene la siguiente invariante:
-		//0<=i<hash.keySet().size() ^ (ForAll j|0<=j<i: (Exists c in hash.get(j)|0<=c<N: unico(matrix[0][i],c))
+		//0<=k<hash.keySet().size() ^ (ForAll j|0<=j<k: (Exists c in hash.get(j)|0<=c<N: unico(matrix[0][i],c))
+		//t2:hash.keySet().size()-k
+		
+		//De esta forma se garantizan los dos casos bases de la ecuación de recurrencia m. Por razones de espacio la fila 0 correspondería a usar 1 grafo,
+		//la 1 2, y así.
 		for(Integer i:hash.keySet())
 		{
 			matrix[0][i][hash.get(i).get(0)]=true;
 		}
 		//Itera sobre todas las filas
 		boolean exists=true;
+		//Ciclo por cada fila de la matriz desde una cantidad de 2 grafos o desde la fila 1
+		//P3: 1<=i<N ^ s={z|0<=z<=D} ^ (ForAll i2|1<=i2<i: (ForAll j|O<=j<=D : 
+		//(ForAll k|0<=k<j ^ matrix[i2][k]!=0:ParPosible(b,d,s)) ^ (ForAll k |0<=k<j ^ matrix[i2][k]==0: !ParPosible(b,d,s))))
+		//t3: N-i
+		//Por fuera tiene una complejidad de O(N). AL agregar su complejidad interna se tiene en total O((N*D)^2)
 			for(int i=1;i<matrix.length;i++)
 			{
+				//P4: O<=j<=D ^ s={z|0<=z<=D} ^ (ForAll k|0<=k<j ^ matrix[i][k]!=0:ParPosible(b,d,s)) ^ (ForAll k |0<=k<j ^
+				//matrix[i][k]==0: !ParPosible(b,d,s))
+				//t4: D+1-j
+				//Por fuera tiene una complejidad de O(D). Al agregar su complejidad interna se tiene en total O(D^2*N)
 				for(int j=0;j<matrix[0].length;j++)
 				{
 					exists=false;
+					//En total los ciclos de las invariantes P5.1 y P5.2 generan ua complejidad de O(D) por fuera.
+					//Internamente se realizan dos recorridos de complejidad O(N) en el peor de los casos, y ya que debe verificar si la matriz no es el vector cero 
+					//y además revisar los grafos que hacen parte de la diferencia indicada en caso de que la primera condición sea cierta. Igual en el peor de los casos
+					// se topó con una diferencia que contiene todos los grafos dados por lo que se haría un segundo recorrido de O(N). Por esto se plantea una 
+					//complejidad de O(N)+O(N), osea O(N)
+					
+					//Teniendo en cuenta la complejidad interna se genera un total de O(N*D)
+			
+					//P5.1: exists=ParPosible(b,d,s) ^ O<=k<j-k ^ s={z|0<=z<k:z}U{z|j-k<=z<j|z}  ^ !exists
+					//t5.1: j/2-k
 					for(int k=0;k<j-k && !exists;k++)
 					{
+						//Evalua la posibilidad de que m(i-1)(k) no sea el vector cero y de que hallan grafos con diferencia j-k
+						
 						if(hash.get(j-k)!=null && notZero(matrix[i-1][k]))
 						{
+							//Revisa los grafos con la diferencia dada
 							for(Integer g:hash.get(j-k))
 							{
+								//Si no se ha usado el grafo se añade a un nuevo arreglo de booleanos y se rompe el ciclo.
 								if(!matrix[i-1][k][g])
 								{
 									b=Arrays.copyOf(matrix[i-1][k], matrix[0][0].length);
@@ -87,12 +113,15 @@ public class ProblemaB {
 								}
 							}
 						}
+						//Evalua la posibilidad de que m(i-1)(j-k) no sea el vector cero y de que hallan grafos con diferencia k
 						else if(hash.get(k)!=null && notZero(matrix[i-1][j-k]))
 						{
+							//Revisa los grafos con la diferencia dada
 							for(Integer g:hash.get(k))
 							{
 								if(!matrix[i-1][j-k][g])
 								{
+									//Si no se ha usado el grafo se añade a un nuevo arreglo de booleanos y se rompe el ciclo.
 									b=Arrays.copyOf(matrix[i-1][j-k], matrix[0][0].length);
 									matrix[i][j]=b;
 									matrix[i][j][g]=true;
@@ -102,12 +131,19 @@ public class ProblemaB {
 							}
 						}
 					}
+					//R5.1: exists=(ParPosible(b,d,{i|0<=i<j})=(m(i,j)!=0))
+					
+					//P5.2: exists=ParPosible(b,d,s) ^ j<=k<=D ^ s={z|0<=z<j:z}U{z|j<=z<=k}  ^ !exists
+					//t5.2: D-k				
 					for(int k=j;k<matrix[0].length && !exists;k++)
 					{
+						//Evalua la posibilidad de que m(i-1)(k) no sea el vector cero y de que hallan grafos con diferencia k-j
 						if(hash.get(k-j)!=null && notZero(matrix[i-1][k]))
 						{
+							//Revisa los grafos con la diferencia dada
 							for(Integer g:hash.get(k-j))
 							{
+								//Si no se ha usado el grafo se añade a un nuevo arreglo de booleanos y se rompe el ciclo.
 								if(!matrix[i-1][k][g])
 								{
 									b=Arrays.copyOf(matrix[i-1][k], matrix[0][0].length);
@@ -118,10 +154,13 @@ public class ProblemaB {
 								}
 							}
 						}
-						else if(hash.get(k-j)!=null && notZero(matrix[i-1][k-j]))
+						//Evalua la posibilidad de que m(i-1)(k-j) no sea el vector cero y de que hallan grafos con diferencia k
+						else if(hash.get(k)!=null && notZero(matrix[i-1][k-j]))
 						{
+							//Revisa los grafos con la diferencia dada
 							for(Integer g:hash.get(k))
 							{
+								//Si no se ha usado el grafo se añade a un nuevo arreglo de booleanos y se rompe el ciclo.
 								if(!matrix[i-1][k-j][g])
 								{
 									b=Arrays.copyOf(matrix[i-1][k-j], matrix[0][0].length);
@@ -133,14 +172,15 @@ public class ProblemaB {
 							}
 						}
 					}
+					//R5.2: exists=(ParPosible(b,d,{i|0<=i<=D})=(m(i,j)!=0))
 				}
 			
 			
 		}
-		//P: 0<=j<matrix[0].length ^ (ForAll k|0<=k<j: !notZero(matrix[matrix.length-1][k])
+		//P6: 0<=j<D+1 ^ (ForAll k|0<=k<j: !notZero(matrix[N-1][k])
 		//En otras palabras, para todas las diferencias antes de la que se está analizando, el arreglo de booleanos debe ser el
 		//vector cero. Si no se retorna el valor de la diferencia buscada.
-		//t:matrix[0].length-j
+		//t6:D+1-j
 		for(int j=0;j<matrix[0].length;j++)
 		{
 			if(notZero(matrix[matrix.length-1][j]))
@@ -149,6 +189,7 @@ public class ProblemaB {
 				return j;
 			}
 		}
+		//R6: 0<=j<D+1 ^ (ForAll k|0<=k<=D: !notZero(matrix[N-1][k])
 		//En el caso improbable de que el algoritmo no encuentre alguna diferencia alcanzable con los datos dados retorna -1
 		return -1;
 	}
