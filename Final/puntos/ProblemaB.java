@@ -34,8 +34,13 @@ public class ProblemaB {
 		for(int i=0;i<graphs.length;i++)
 		{
 			//Diferencia temporal
-			maxDifference+=graphs[i].difference;
-			//Si no existe una lista de esta diferencia creéla
+			dif=graphs[i].difference;
+			System.out.println("DIF "+dif);
+			if(dif>maxDifference)
+			{
+				maxDifference=dif;
+			}
+			//Si no eciste una lista de esta diferencia creéla
 			if(!hash.containsKey(dif))
 			{
 				hash.put(dif, new ArrayList<>());
@@ -65,6 +70,7 @@ public class ProblemaB {
 		}
 		//Itera sobre todas las filas
 		boolean exists=true;
+		int tempDif=0;
 		//Ciclo por cada fila de la matriz desde una cantidad de 2 grafos o desde la fila 1
 		//P3: 1<=i<N ^ s={z|0<=z<=D} ^ (ForAll i2|1<=i2<i: (ForAll j|O<=j<=D : 
 		//(ForAll k|0<=k<j ^ matrix[i2][k]!=0:ParPosible(b,d,s)) ^ (ForAll k |0<=k<j ^ matrix[i2][k]==0: !ParPosible(b,d,s))))
@@ -169,8 +175,12 @@ public class ProblemaB {
 						}
 					}
 					//R5.2: exists=(ParPosible(b,d,{i|0<=i<=D})=(m(i,j)!=0))
+					
+					System.out.println(i+":"+j+":"+Arrays.toString(matrix[i][j]));
+
 				}
-			
+				
+				System.out.println();
 			
 		}
 		//P6: 0<=j<D+1 ^ (ForAll k|0<=k<j: !notZero(matrix[N-1][k])
@@ -207,7 +217,7 @@ public class ProblemaB {
 
 	public static void main(String[] args) throws Exception{
 		//Instancia del problema
-		
+	
 		ProblemaB instance = new ProblemaB();
 		List<Integer> answers=new ArrayList<>();
 		try ( 
