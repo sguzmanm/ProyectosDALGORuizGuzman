@@ -34,12 +34,8 @@ public class ProblemaB {
 		for(int i=0;i<graphs.length;i++)
 		{
 			//Diferencia temporal
-			dif=graphs[i].difference;
-			if(dif>maxDifference)
-			{
-				maxDifference=dif;
-			}
-			//Si no eciste una lista de esta diferencia creéla
+			maxDifference+=graphs[i].difference;
+			//Si no existe una lista de esta diferencia creéla
 			if(!hash.containsKey(dif))
 			{
 				hash.put(dif, new ArrayList<>());
@@ -211,6 +207,7 @@ public class ProblemaB {
 
 	public static void main(String[] args) throws Exception{
 		//Instancia del problema
+		
 		ProblemaB instance = new ProblemaB();
 		List<Integer> answers=new ArrayList<>();
 		try ( 
