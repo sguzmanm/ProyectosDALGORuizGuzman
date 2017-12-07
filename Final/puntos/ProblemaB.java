@@ -35,12 +35,11 @@ public class ProblemaB {
 		{
 			//Diferencia temporal
 			dif=graphs[i].difference;
-			System.out.println("DIF "+dif);
 			if(dif>maxDifference)
 			{
 				maxDifference=dif;
 			}
-			//Si no eciste una lista de esta diferencia creéla
+			//Si no existe una lista de esta diferencia creéla
 			if(!hash.containsKey(dif))
 			{
 				hash.put(dif, new ArrayList<>());
@@ -176,11 +175,9 @@ public class ProblemaB {
 					}
 					//R5.2: exists=(ParPosible(b,d,{i|0<=i<=D})=(m(i,j)!=0))
 					
-					System.out.println(i+":"+j+":"+Arrays.toString(matrix[i][j]));
 
 				}
 				
-				System.out.println();
 			
 		}
 		//P6: 0<=j<D+1 ^ (ForAll k|0<=k<j: !notZero(matrix[N-1][k])
