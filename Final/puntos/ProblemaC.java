@@ -3,11 +3,9 @@ package puntos;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import sun.security.jca.GetInstance.Instance;
 
 /**
  * 
@@ -31,7 +29,6 @@ public class ProblemaC {
 			int length = greedy.textoMinimo(sb).length();
 			if (length<lengthReference) lengthReference = length;
 		}
-		System.out.println("LENGTH REFERENCE " + lengthReference);
 
 		//Llama el algoritmo de exploracion de grafos para encontar las soluciones
 		List<CharacterChainState> solutions = findFeasibleSolutions(sb, k);
@@ -165,17 +162,87 @@ public class ProblemaC {
 			int k = Integer.parseInt(valores[1]);
 			line = br.readLine();
 			int i = 0;
+			ArrayList<String> list=new ArrayList<>();
 			String sb [] = new String [n];
 			while(line!=null && line.length()>0) {
-				sb[i] = line.trim();
+				if(n==-1)
+				{
+					valores=line.split(" ");
+					n=Integer.parseInt(valores[0]);
+					k=Integer.parseInt(valores[1]);
+					sb=new String[n];
+				}
+				else
+				{
+					sb[i] = line.trim();
+					i++;
+					if(i==n)
+					{
+						list.add(pd.textoMinimo(sb,k));
+						i=0;
+						n=-1;
+					}
+				}
 				line = br.readLine();
-				i++;
+				
 			}
-
-			String resp = pd.textoMinimo(sb,k);
-			System.out.println(resp);
+			for(String resp:list)
+				System.out.println(resp);
 		}
 	}
+	
+
+
+	 class ProblemaCGreedy {
+
+		//Elige aleatoriamente subtextos del arreglo sb cada vez, calculando una posible solucion de forma aleatoria
+		public String textoMinimo(String substext []) throws Exception {
+			String fatherText = "";
+			String[] fatherSb = substext;
+			while (fatherSb.length > 0)
+			{
+				List<String> sb = new ArrayList<String>();
+				int j = 0;
+				int where = -1;
+				int i = (int) Math.floor(Math.random() * (fatherSb.length-1));
+				for (int y = fatherText.length()-(fatherSb[i].length() - 1); y < fatherText.length() && y>=0; y++) {
+					if (fatherText.charAt(y) == fatherSb[i].charAt(j)) {
+						j++;
+						if (where == -1) 
+							where = y;
+						if (y+1 == fatherText.length()) {
+							if (where == -1) where = 0;
+							fatherText = fatherText.substring(0, where);
+						}
+					}
+					else if (where != -1) {
+						j = 0;
+						y = y-1;
+						where = -1;
+					}
+				}
+				int cantMenos = fatherText.length()-where;
+				if (where == -1) cantMenos = 0;
+				String t = fatherText + fatherSb[i];
+				String subT = t;
+				if (fatherText.length()>fatherSb[i].length()) 
+					subT = t.substring(t.length() - (2*(fatherSb[i].length()-cantMenos)-1+cantMenos), t.length());
+				for (int k = 0; k < fatherSb.length;k++)
+				{
+					if (!subT.contains(fatherSb[k])) {
+						sb.add(fatherSb[k]);
+					}
+				}
+				String [] answ = new String [sb.size()];
+				answ = sb.toArray(answ);
+				fatherText = t;
+				fatherSb = answ;
+			}
+			return fatherText;
+		}
+
+	}
+
 
 
 	class CharacterChainState implements Comparable<CharacterChainState>{
@@ -244,7 +311,7 @@ public class ProblemaC {
 			else if (n>o.n) return 1;
 			else
 			{
-				//This is the worst case for the conditional because it involves to operations.
+				//This is the worst case for the conditional because it involves two operations.
 				//Nevertheless is assumed to be constant O(1)
 				return t.length()-o.t.length();
 			}
