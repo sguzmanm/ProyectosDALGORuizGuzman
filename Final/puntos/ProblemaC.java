@@ -29,7 +29,7 @@ public class ProblemaC {
 			int length = greedy.textoMinimo(sb).length();
 			if (length<lengthReference) lengthReference = length;
 		}
-
+		System.out.println("LONGITUD "+lengthReference);
 		//Llama el algoritmo de exploracion de grafos para encontar las soluciones
 		List<CharacterChainState> solutions = findFeasibleSolutions(sb, k);
 		//Elige la mejor de las soluciones 
@@ -125,7 +125,7 @@ public class ProblemaC {
 	 * @return boolean true si el estado es viable
 	 */
 	private boolean isViable(CharacterChainState state) {
-		return state.getT().length() <= lengthReference;
+		return state.getT().length() < lengthReference;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class ProblemaC {
 	 * @return boolean true si el estado ya no tiene sub textos y su tamaño de texto es menor que la referencia
 	 */
 	private boolean isSolution(CharacterChainState state) {
-		if (state.getSb().length == 0 && state.getT().length() <= lengthReference) {
+		if (state.getSb().length == 0 && state.getT().length() < lengthReference) {
 			lengthReference = state.getT().length();
 			return true;
 		}
@@ -184,6 +184,7 @@ public class ProblemaC {
 					}
 				}
 				line = br.readLine();
+				System.out.println("LINEA "+i+" "+line);
 				
 			}
 			for(String resp:list)

@@ -13,7 +13,7 @@ public class ChainGenerator {
 	public static void facil(int num) throws IOException
 	{
 		FileWriter fw = new FileWriter("./data/ProblemaC/facil"+num+".txt");
-		fw.write("1000 100\n");
+		fw.write("10 100\n");
 		String msj="";
 		int lim=0;
 		
@@ -23,8 +23,6 @@ public class ChainGenerator {
         for(int j = 0; j < word.length; j++)
         {
             word[j] = (char)('a' + random.nextInt(26));
-            if((j+1)%100==0)
-            	fw.write(new String(word,j-99,100)+"\n");
         }
         String chain=new String(word);
         System.out.println(word);
