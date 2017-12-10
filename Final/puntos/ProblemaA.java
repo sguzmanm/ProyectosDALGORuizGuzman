@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class ProblemaA {
 
-	public double problema1 (int n,double A, double B,double C,double D) {
+	public String problema1 (int n,double A, double B,double C,double D) {
 		
 		//Q: true
 		double [] reserva = new double [n+1];
@@ -45,17 +45,17 @@ public class ProblemaA {
 		return redondear(cp);
 	}
 
-	public double redondear(double numero) {
+	public String redondear(double numero) {
 
 		BigDecimal bd = new BigDecimal(numero);
 		bd = bd.setScale(4, RoundingMode.HALF_UP);
-		return bd.doubleValue();
+		return bd+"";
 	}
 
 	public static void main(String[] args) throws Exception{
 		//Instancia del problema
 		ProblemaA pd = new ProblemaA();
-		ArrayList<Double> resp = new ArrayList<>();
+		ArrayList<String> resp = new ArrayList<>();
 		try ( 
 				InputStreamReader is= new InputStreamReader(System.in);
 				BufferedReader br = new BufferedReader(is);
@@ -68,7 +68,7 @@ public class ProblemaA {
 				line=br.readLine();
 			}
 			//If no one is typing anymore end the algorithm and show the answers
-			for(Double r:resp)
+			for(String r:resp)
 				System.out.println(r);
 
 		}
