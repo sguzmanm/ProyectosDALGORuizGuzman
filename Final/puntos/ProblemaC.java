@@ -24,12 +24,16 @@ public class ProblemaC {
 		//Se efectua un greedy que selecciona aleatoriamente una solucion, se hace 5 veces para optener el menor valor ya que este 
 		//no da siempre igual
 		lengthReference = Integer.MAX_VALUE;
+		String answGreedy = "";
+		String greedyT = "";
 		ProblemaCGreedy greedy = new ProblemaCGreedy();
 		for (int i = 0; i < 5; i++) {
-			int length = greedy.textoMinimo(sb).length();
-			if (length<lengthReference) lengthReference = length;
+			answGreedy = greedy.textoMinimo(sb);
+			if (answGreedy.length()<lengthReference) {
+				lengthReference = answGreedy.length();
+				greedyT = answGreedy;
+			}
 		}
-
 		//Llama el algoritmo de exploracion de grafos para encontar las soluciones
 		List<CharacterChainState> solutions = findFeasibleSolutions(sb, k);
 		//Elige la mejor de las soluciones 
@@ -42,28 +46,30 @@ public class ProblemaC {
 				opt = sol;
 			}
 		}
-		if (solutions.isEmpty()) throw new Exception("No se encontro ninguna solucion que cumpla con la referencia de costo");
+		if (solutions.isEmpty()) return greedyT;
 		return opt.getT();
 	}
 
-	//
+	//Busca todas las posibles soluciones
 	private List<CharacterChainState> findFeasibleSolutions(String sb [], int k) {
 		List<CharacterChainState> answer = new ArrayList<>();
 		//Estado inicial
 		CharacterChainState state = new CharacterChainState("", sb, 0);
 		//Agenda
 		agenda.add(state);
+		// P1: (estadoInicial.text = empty) ^ (estadoInicial.subtexts = sb) ^ (estadoInicial.N = 0) ^ (estadoInicial BELONGS agenda) ^ answer.isEmpty()
+		//En otras palabras, el estado inicial debe poseer el texto vacio, todos los subtextos recibidos en la entrada, y su nivel debe 
+		//ser 0, además, este tiene que estar en la agenda
 		while(agenda.size()>0) {
 			//Elige el proximo estado de la agenda
 			state = agenda.poll();
-			//Verifica si es viable
-			if(isViable(state)) {
 				//Verifica si es una solucion
 				if(isSolution(state)) answer.add(state);
 				//Agrega los sucesores a la agenda 
 				List<CharacterChainState> successors = getSuccessors (state, k);
 				agenda.addAll(successors);
-			}
+		//R1: agenda.isEmpty ^ (ForAll state | isSolution(state) : state BELONGS answer)
+		// Al final de este while, la agenda debe estar vacía y todos los estados que sean solucion deben estar en el arrayList answer.
 		}
 		return answer;
 	}
@@ -77,12 +83,17 @@ public class ProblemaC {
 		List<CharacterChainState> successors = new ArrayList<>();
 		String fatherText = state.getT();
 		String [] fatherSb = state.getSb();
+		
+		//Recorre todos los subtextos del estado que llega por parametro, cada vez le agrega uno de los subextos al texto, y busca si se
+		//creo alguno de los otros subtextos para saber cuales son los subtextos del sucesor.
 		for (int i = 0; i < state.getSb().length; i++)
 		{
 			String fatherT = fatherText;
 			List<String> sb = new ArrayList<String>();
 			int j = 0;
 			int where = -1;
+			//recorre las ultimas posiciones (fatherT.length - k -1) del texto, para ver si puede usar algunos caracteres del texto para crear el subtexto, minimizando
+			//el tamaño del texto
 			for (int y = fatherT.length()-(k - 1); y < fatherT.length() && y>=0; y++) {
 				if (fatherT.charAt(y) == fatherSb[i].charAt(j)) {
 					j++;
@@ -99,12 +110,17 @@ public class ProblemaC {
 					where = -1;
 				}
 			}
+			//la cantidad de caracteres del texto que tiene el subtexto 
 			int cantMenos = fatherText.length()-where;
 			if (where == -1) cantMenos = 0;
+			//se concatena el texto del estado padre con el subtexto correspondiente
 			String t = fatherT + fatherSb[i];
 			String subT = t;
+			//Si el nivel del estado padre es mayor que 0, coge la subcadena de las ultimas 2k+cantMenos para verificar cuales subtextos se
+			//crearon al aumentar la cadena de texto
 			if (state.getN()>0) 
 				subT = t.substring(t.length() - (2*(k-cantMenos)-1+cantMenos), t.length());
+			//verifica que estados se crearon en el nuevo texto
 			for (int x = 0; x < fatherSb.length;x++)
 			{
 				if (!subT.contains(fatherSb[x])) {
@@ -114,8 +130,10 @@ public class ProblemaC {
 
 			String [] answ = new String [sb.size()];
 			answ = sb.toArray(answ);
+			//se crea el sucesor con el texto calculado, los subtextos calculados, y el nivel es el mismo del estado padre+1
 			CharacterChainState succesor = new CharacterChainState(t, answ, state.getN()+1);
-			successors.add(succesor);
+			//Se verifica de una vez si el sucesor es viable, si lo es se agrega a los sucesores si no se descarta de una vez
+			if (isViable(succesor)) successors.add(succesor);
 		}
 		return successors;
 	}
@@ -125,16 +143,16 @@ public class ProblemaC {
 	 * @return boolean true si el estado es viable
 	 */
 	private boolean isViable(CharacterChainState state) {
-		return state.getT().length() <= lengthReference;
+		return state.getT().length() < lengthReference;
 	}
 
 	/**
 	 * Determina si el estado dado es una solucion
-	 * @param stado que sera verificado
+	 * @param state estado que sera verificado
 	 * @return boolean true si el estado ya no tiene sub textos y su tamaño de texto es menor que la referencia
 	 */
 	private boolean isSolution(CharacterChainState state) {
-		if (state.getSb().length == 0 && state.getT().length() <= lengthReference) {
+		if (state.getSb().length == 0 && state.getT().length() < lengthReference) {
 			lengthReference = state.getT().length();
 			return true;
 		}
@@ -195,7 +213,8 @@ public class ProblemaC {
 
 	 class ProblemaCGreedy {
 
-		//Elige aleatoriamente subtextos del arreglo sb cada vez, calculando una posible solucion de forma aleatoria
+		//Elige aleatoriamente subtextos del arreglo sb cada vez, calculando una posible solucion de forma aleatoria, usa la misma logica 
+		 //que el getSucessors()
 		public String textoMinimo(String substext []) throws Exception {
 			String fatherText = "";
 			String[] fatherSb = substext;
