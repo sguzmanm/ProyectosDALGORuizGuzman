@@ -23,7 +23,6 @@ public class ProblemaA {
 		//t1: N - i
 		for (int i = 2; i <= n; i++) {
 			reserva[i] = C*reserva[i-2] + D*reserva[i-1];
-			reserva[i] = redondear(reserva[i], 4);
 		}
 		//R1: ForAll k| 0 <= k <= N : reserva[k] = r(k)
 		
@@ -33,7 +32,6 @@ public class ProblemaA {
 		//t2: N/2 - i
 		for (int i=0; i <= n-i; i++) {
 			cp += reserva[i]*reserva[n-i];
-			cp = redondear(cp, 4);
 		}
 		//R2: cp = cp(r, n/2)
 		
@@ -42,16 +40,15 @@ public class ProblemaA {
 		//Q2: cp = cp(r,N) + max(0,((n+1)%2)*(N/2)^2)
 		if (n%2==0) {
 			cp -= reserva[n/2]*reserva[n/2];
-			cp = redondear(cp, 4);
 		}
 		//R3: cp = cp(r,N)
-		return redondear(cp,4);
+		return redondear(cp);
 	}
 
-	public static double redondear(double numero, int decimales) {
+	public double redondear(double numero) {
 
 		BigDecimal bd = new BigDecimal(numero);
-		bd = bd.setScale(decimales, RoundingMode.HALF_UP);
+		bd = bd.setScale(4, RoundingMode.HALF_UP);
 		return bd.doubleValue();
 	}
 
